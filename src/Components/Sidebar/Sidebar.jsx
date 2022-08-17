@@ -10,7 +10,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-
+import { useGetGenresQuery } from '../../services/TMDB';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import useStyles from './styles';
@@ -31,6 +31,8 @@ const Sidebar = ({ setMobileOpen }) => {
 
   const theme = useTheme();
   const classes = useStyles();
+  const { data, isFetching } = useGetGenresQuery();
+  console.log(data);
 
   const redLogo =
     'https://fontmeme.com/permalink/210930/8531c658a743debe1e1aa1a2fc82006e.png';
@@ -70,11 +72,16 @@ const Sidebar = ({ setMobileOpen }) => {
       <Divider />
       <List>
         <ListSubheader>Genres</ListSubheader>
-        {categories.map(({ label, value }) => {
-          return (
-            <Link key={value} className={classes.links} to="/">
-              <ListItem onClick={() => {}} button>
-                {/* <ListItemIcon>
+        {isFetching ? (
+          <Box display="flex" justifyContent="center">
+            <CircularProgress size="4rem" />
+          </Box>
+        ) : (
+          data.genres.map(({ name, id }) => {
+            return (
+              <Link key={name} className={classes.links} to="/">
+                <ListItem onClick={() => {}} button>
+                  {/* <ListItemIcon>
                   <img
                     src={redLogo}
                     alt={label}
@@ -82,11 +89,12 @@ const Sidebar = ({ setMobileOpen }) => {
                     height={30}
                   />
                 </ListItemIcon> */}
-                <ListItemText primary={label} />
-              </ListItem>
-            </Link>
-          );
-        })}
+                  <ListItemText primary={name} />
+                </ListItem>
+              </Link>
+            );
+          })
+        )}
       </List>
     </>
   );
